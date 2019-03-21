@@ -7,89 +7,113 @@ using std::cin;
 using std::cout;
 
 /*
-A Computer Network is stored in the following format: an array, called net, of
-pointers where each pointer is the head of a list. The list at index i contains
-the ids of all the computers to which computer i is connected; the order of the
-ids in a list does not matter. A class which stores a network is defined below.
-Implement all the methods stated in the following definition.
+
+- A Computer Network is stored in the following format: an array, called net, of
+pointers where each pointer is the head of a list.
+
+- The list at index i contains the ids of all the computers to which computer i
+is connected; the order of the ids in a list does not matter.
+
+- A class which stores a network is defined below.
 */
 
 class Network
 {
 
-    struct Computer
+  struct Computer
+  {
+    int id;
+    Computer *next;
+    // method to enable if(n[i][j]) cout<<"i and j are connected.
+    bool operator[](int j);
+  };
+
+  // add id into the list pointed to by head
+  std::vector<Computer *> net;
+
+  void addConnection(Computer *&head, int id)
+  {
+
+    while (head)
     {
-        int id;
-        Computer *next;
-        // method to enable if(n[i][j]) cout<<"i and j are connected.
-        bool operator[](int j);
-    };
+      head = head->next;
+    }
+    if (!head->next) // No elements
+      head->id = id;
+  }
 
-    // add id into the list pointed to by head
-    Vector<Computer *> net;
+public:
+  Network()
+  {
+    Computer cp;
+  }
 
-    void addConnection(Computer *&head, int id);
+  Network(string fn)
+  {
+    std::ifstream fin(fn);
+    fin.close();
+  }
 
-  public:
-    Network();
+  Network(const Network &obj);
 
-    Network(string fn);
+  const Network &operator=(const Network &obj);
 
-    Network(const Network &obj);
+  // create net array of size, with no connections
+  Network(int size)
+  {
+    Computer cp;
+    net.reserve(size);
+  }
 
-    const Network &operator=(const Network &obj);
+  // connect computers x and y
+  // use the utility method addConnection
+  void addConnection(int x, int y);
 
-    // create net array of size, with no connections
-    Network(int size);
+  // merge two networks (take union)
+  // computers, connections in any one of the networks appear in result
+  Network operator+(const Network &obj);
 
-    // connect computers x and y
-    // use the utility method addConnection
-    void addConnection(int x, int y);
+  // intersect two networks (extract the common core)
+  // links and computers present in both networks appear in the result
+  Network operator*(const Network &obj);
+  // Remove the common connections of obj and this network
 
-    // merge two networks (take union)
-    // computers, connections in any one of the networks appear in result
-    Network operator+(const Network &obj);
+  // Remove the common connections of obj and this network
+  Network operator-(const Network &obj);
 
-    // intersect two networks (extract the common core)
-    // links and computers present in both networks appear in the result
-    Network operator*(const Network &obj);
-    // Remove the common connections of obj and this network
+  // Take complement of the Network
+  // Returns a network with the same computers
+  // but which contains complementary connections
+  // resultant contains connections which are absent in this network
+  Network operator-();
 
-    // Remove the common connections of obj and this network
-    Network operator-(const Network &obj);
+  friend ostream &operator<<(ostream &out, Network *obj);
 
-    // Take complement of the Network
-    // Returns a network with the same computers
-    // but which contains complementary connections
-    // resultant contains connections which are absent in this network
-    Network operator-();
+  // method to enable if(n[i][j]) cout<<"i and j are connected.
+  Computer &operator[](int i);
 
-    friend ostream &operator<<(ostream &out, Network *obj);
+  // add another computer to the network
+  Network operator++(int);
 
-    Computer &operator[](int i);
+  // logical methods
+  // subNetwork returns true if obj is a sub-network of this network
+  bool subNetwork(const Network &obj);
 
-    // add another computer to the network
-    Network operator++(int);
+  // get all neighbors of computer nid
+  vector<int> getNeighbours(int nid);
 
-    // logical methods
-    // subNetwork returns true if obj is a sub-network of this network
-    bool subNetwork(const Network &obj);
+  // get all unique neighbors-of-neighbors of computer nid
+  vector<int> getNeighboursofNeighbours(int nid);
 
-    // get all neighbors of computer nid
-    vector<int> getNeighbours(int nid);
+  // returns all computers in order of their number of neighbors
+  // computer with most neighbors comes first and so on
+  vector<int> orderOfDegree();
 
-    // get all unique neighbors-of-neighbors of computer nid
-    vector<int> getNeighboursofNeighbours(int nid);
+  // Suggest connection
+  // Returns two unconnected computers with most common neighbors
+  vector<int> suggestConnection();
 
-    // returns all computers in order of their number of neighbors
-    // computer with most neighbors comes first and so on
-    vector<int> orderOfDegree();
-
-    // Suggest connection
-    // Returns two unconnected computers with most common neighbors
-    vector<int> suggestConnection();
-
-    ~Network();
+  ~Network();
 };
 
 int main() { return 0; }
