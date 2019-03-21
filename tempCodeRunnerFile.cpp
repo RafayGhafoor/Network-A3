@@ -1,3 +1,7 @@
-    addConnection(ptr, 12);
-    addConnection(ptr, 13);
-    addConnection(ptr, 14);
+  if (obj.net[i]->next->next == nullptr)
+        out << obj.net[i]->id;
+
+      else
+        out << obj.net[i]->id << ", ";
+
+      

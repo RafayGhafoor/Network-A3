@@ -14,20 +14,22 @@ std::vector<Computer *> net;
 
 void addConnection(Computer *&head, int id)
 {
-    if (head->next == nullptr)
-    {
-        head->id = id;
-        head->next = new Computer;
+    Computer *reset = head;
+
+    while (head->next != nullptr)
         head = head->next;
-    }
-    else
-        cout << "Node not at the end!\n";
+
+    head->id = id;
+    head->next = new Computer;
+    head = head->next;
+
+    head = reset;
 }
 
 void printCon(Computer *&node)
 {
     Computer *temp = node;
-    cout << "\nDisplaying Information for Node:\nConnection IDs: [";
+    cout << "\n>>> Displaying Information for Node:\nConnection IDs: [";
 
     while (temp)
     {
@@ -45,13 +47,17 @@ void printCon(Computer *&node)
 int main()
 {
     Computer *ptr = new Computer;
-    Computer *tracker = ptr;
 
     addConnection(ptr, 12);
     addConnection(ptr, 13);
     addConnection(ptr, 14);
-    printCon(tracker);
-    printCon(tracker);
+    printCon(ptr);
+
+    addConnection(ptr, 19);
+    addConnection(ptr, 12);
+    addConnection(ptr, 10);
+
+    printCon(ptr);
 
     delete ptr;
 }
