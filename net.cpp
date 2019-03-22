@@ -18,9 +18,11 @@ is connected; the order of the ids in a list does not matter.
 - A class which stores a network is defined below.
 */
 
-class Network {
+class Network
+{
 
-  struct Computer {
+  struct Computer
+  {
     int id;
     Computer *next;
     // method to enable if(n[i][j]) cout<<"i and j are connected.
@@ -30,7 +32,8 @@ class Network {
   // add id into the list pointed to by head
   std::vector<Computer *> net;
 
-  void addConnection(Computer *&head, int id) {
+  void addConnection(Computer *&head, int id)
+  {
     Computer *reset = head;
 
     while (head->next != nullptr)
@@ -39,20 +42,22 @@ class Network {
     head->id = id;
     head->next = new Computer;
     head = head->next;
-
+    head->next = nullptr;
     head = reset;
   }
 
 public:
   Network() {}
 
-  Network(std::string fn) {
+  Network(std::string fn)
+  {
     char temp[200];
     net.resize(3, nullptr); // Intitial size for vector
     std::ifstream fin(fn);
     int index = 0;
 
-    while (fin >> index) {
+    while (fin >> index)
+    {
 
       net[index] = new Computer;
       fin.getline(temp, 200, '\n');
@@ -61,7 +66,6 @@ public:
         if (temp[i] != ' ')
           addConnection(net[index], (temp[i] - 48));
     }
-
     fin.close();
   }
 
@@ -70,7 +74,8 @@ public:
   const Network &operator=(const Network &obj);
 
   // create net array of size, with no connections
-  Network(int size) {
+  Network(int size)
+  {
     Computer cp;
     net.resize(size, nullptr);
   }
@@ -123,7 +128,8 @@ public:
   // Returns two unconnected computers with most common neighbors
   std::vector<int> suggestConnection();
 
-  ~Network() {
+  ~Network()
+  {
     cout << "Helo";
     // for (int i = 0; i < net.size(); i++)
     // {
@@ -141,30 +147,36 @@ public:
   }
 };
 
-std::ostream &operator<<(std::ostream &out, Network &obj) {
-  int i = 0;
-  out << "\n>>> Displaying Information for Node [" << i
-      << "]\nConnection IDs: [";
+std::ostream &operator<<(std::ostream &out, Network &obj)
+{
 
-  for (; i < obj.net.size(); i++) {
-    if (obj.net[i]) {
-      out << obj.net[i]->id;
+  for (int i = 0; i < obj.net.size(); i++)
+  {
+    out << "\n>>> Displaying Information for Node [" << i
+        << "]\nConnection IDs: [";
 
-      if (obj.net[i]->next->next == nullptr)
-        out << obj.net[i]->id;
+    if (obj.net[i])
+    {
 
-      else
-        out << obj.net[i]->id << ", ";
+      while (obj.net[i])
+      {
 
-      obj.net[i] = obj.net[i]->next;
+        if (obj.net[i]->next == nullptr)
+          out << obj.net[i]->id;
+        else
+          out << obj.net[i]->id << ", ";
+
+        obj.net[i] = obj.net[i]->next;
+      }
     }
+    out << "]\n";
   }
 
-  out << "]\n";
   return out;
 }
 
-int main() {
+int main()
+{
   Network my_obj("testing.txt");
   cout << my_obj;
 }
