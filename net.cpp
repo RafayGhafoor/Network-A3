@@ -42,7 +42,7 @@ class Network
     head->id = id;
     head->next = new Computer;
     head = head->next;
-    head->next = nullptr;
+
     head = reset;
   }
 
@@ -130,20 +130,20 @@ public:
 
   ~Network()
   {
-    cout << "Helo";
-    // for (int i = 0; i < net.size(); i++)
-    // {
-    // cout << "Deleting " << i << endl;
-    // Computer *t1 = net[i];
-    // Computer *temp = net[i];
+    for (int i = 0; i < net.size(); i++)
+    {
+      Computer *t1 = net[i];
+      Computer *temp = net[i];
 
-    // while (t1->next)
-    // {
-    //   temp = t1->next;
-    //   delete t1->next;
-    //   t1->next = temp;
-    // }
-    // }
+      while (t1->next)
+      {
+        temp = t1->next;
+        delete t1->next;
+        t1->next = temp;
+      }
+      delete net[i];
+    }
+    net.clear();
   }
 };
 
@@ -157,15 +157,13 @@ std::ostream &operator<<(std::ostream &out, Network &obj)
 
     if (obj.net[i])
     {
-
-      while (obj.net[i])
+      while (obj.net[i]->next)
       {
-
-        if (obj.net[i]->next == nullptr)
+        if (obj.net[i]->next->next == nullptr)
           out << obj.net[i]->id;
+
         else
           out << obj.net[i]->id << ", ";
-
         obj.net[i] = obj.net[i]->next;
       }
     }
