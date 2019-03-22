@@ -14,6 +14,7 @@ void addConnection(Computer *&head, int id) {
     head = head->next;
 
   head->next = new Computer;
+  head->next->next = nullptr;
   head->id = id;
   head = temp;
 }
