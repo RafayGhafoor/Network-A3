@@ -52,7 +52,7 @@ public:
   Network(std::string fn)
   {
     char temp[200];
-    net.resize(3, nullptr); // Intitial size for vector
+    net.resize(10, nullptr); // Intitial size for vector
     std::ifstream fin(fn);
     int index = 0;
 
@@ -132,6 +132,8 @@ public:
   {
     for (int i = 0; i < net.size(); i++)
     {
+      if (!net[i])
+        continue;
       Computer *t1 = net[i];
       Computer *temp = net[i];
 
@@ -150,13 +152,13 @@ public:
 std::ostream &operator<<(std::ostream &out, Network &obj)
 {
 
-  for (int i = 0; i < obj.net.size(); i++)
+  for (int i = 0; i < obj.net.size() - 1; i++)
   {
-    out << "\n>>> Displaying Information for Node [" << i
-        << "]\nConnection IDs: [";
 
     if (obj.net[i])
     {
+      out << "\n>>> Displaying Information for Node [" << i
+          << "]\nConnection IDs: [";
       while (obj.net[i]->next)
       {
         if (obj.net[i]->next->next == nullptr)
@@ -166,8 +168,8 @@ std::ostream &operator<<(std::ostream &out, Network &obj)
           out << obj.net[i]->id << ", ";
         obj.net[i] = obj.net[i]->next;
       }
+      out << "]\n";
     }
-    out << "]\n";
   }
 
   return out;
