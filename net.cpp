@@ -18,9 +18,11 @@ is connected; the order of the ids in a list does not matter.
 - A class which stores a network is defined below.
 */
 
-class Network {
+class Network
+{
 
-  struct Computer {
+  struct Computer
+  {
     int id;
     Computer *next;
     // method to enable if(n[i][j]) cout<<"i and j are connected.
@@ -30,7 +32,8 @@ class Network {
   // add id into the list pointed to by head
   std::vector<Computer *> net;
 
-  void addConnection(Computer *&head, int id) {
+  void addConnection(Computer *&head, int id)
+  {
     Computer *temp = new Computer;
     temp->id = id;
     temp->next = nullptr;
@@ -38,7 +41,8 @@ class Network {
     if (head == nullptr)
       head = temp;
 
-    else {
+    else
+    {
       Computer *tracker = head;
 
       while (tracker->next != nullptr)
@@ -51,13 +55,15 @@ class Network {
 public:
   Network() {}
 
-  Network(std::string fn) {
+  Network(std::string fn)
+  {
     char temp[200];
     net.resize(10, nullptr); // Intitial size for vector
     std::ifstream fin(fn);
     int index = 0;
 
-    while (fin >> index) {
+    while (fin >> index)
+    {
 
       fin.getline(temp, 200, '\n');
 
@@ -68,12 +74,14 @@ public:
     fin.close();
   }
 
-  Network(const Network &obj) {
+  Network(const Network &obj)
+  {
 
     net.resize(obj.net.size(), nullptr);
     std::vector<Computer *> tmp = obj.net;
     for (int i = 0; tmp[i] && i < tmp.size(); i++)
-      while (tmp[i]) {
+      while (tmp[i])
+      {
         addConnection(net[i], tmp[i]->id);
         tmp[i] = tmp[i]->next;
       }
@@ -131,15 +139,18 @@ public:
   // Returns two unconnected computers with most common neighbors
   std::vector<int> suggestConnection();
 
-  ~Network() {
-    for (int i = 0; i < net.size(); i++) {
+  ~Network()
+  {
+    for (int i = 0; i < net.size(); i++)
+    {
       if (!net[i])
         continue;
 
       Computer *t1 = net[i];
       Computer *temp = net[i];
 
-      while (t1->next) {
+      while (t1->next)
+      {
 
         temp = t1->next;
 
@@ -156,11 +167,14 @@ public:
   }
 };
 
-std::ostream &operator<<(std::ostream &out, Network &obj) {
-  for (int i = 0; obj.net[i] && i < obj.net.size(); i++) {
+std::ostream &operator<<(std::ostream &out, Network &obj)
+{
+  for (int i = 0; obj.net[i] && i < obj.net.size(); i++)
+  {
     out << "\n>>> Displaying Information for Node [" << i
         << "]\nConnection IDs: [";
-    while (obj.net[i]) {
+    while (obj.net[i])
+    {
       if (obj.net[i]->next == nullptr)
         out << obj.net[i]->id;
 
@@ -176,7 +190,8 @@ std::ostream &operator<<(std::ostream &out, Network &obj) {
   return out;
 }
 
-int main() {
+int main()
+{
   Network my_obj("testing.txt"), abc(my_obj);
   cout << abc;
 }
