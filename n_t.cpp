@@ -13,9 +13,10 @@ void addConnection(Computer *&head, int id) {
   while (head->next)
     head = head->next;
 
-  head->next = new Computer;
-  head->next->next = nullptr;
   head->id = id;
+  head->next = new Computer;
+  head = head->next;
+  head->next = nullptr;
   head = temp;
 }
 
@@ -30,6 +31,7 @@ void print(Computer *&head) {
 }
 int main() {
   Computer *ptr = new Computer;
+  ptr->next = nullptr;
   addConnection(ptr, 3);
   addConnection(ptr, 23);
   addConnection(ptr, 10);
