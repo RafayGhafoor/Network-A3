@@ -1,13 +1,6 @@
-size(); i++) {
-      //     Computer *t1 = net[i];
-      //     Computer *temp = net[i];
-
-      //     while (t1->next) {
-      //       temp = t1->next;
-      //       delete t1->next;
-      //       t1->next = temp;
-      //     }
-      //     delete net[i];
-      //   }
-      //   net.clear();
-      // }
+    for (int i = 0; tmp[i] && i < tmp.size(); i++)
+      while (tmp[i])
+      {
+        addConnection(net[i], tmp[i]->id);
+        tmp[i] = tmp[i]->next;
+      }

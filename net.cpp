@@ -18,11 +18,9 @@ is connected; the order of the ids in a list does not matter.
 - A class which stores a network is defined below.
 */
 
-class Network
-{
+class Network {
 
-  struct Computer
-  {
+  struct Computer {
     int id;
     Computer *next;
     // method to enable if(n[i][j]) cout<<"i and j are connected.
@@ -32,34 +30,35 @@ class Network
   // add id into the list pointed to by head
   std::vector<Computer *> net;
 
-  void addConnection(Computer *&head, int id)
-  {
-    Computer *reset = head;
+  void addConnection(Computer *&head, int id) {
+    Computer *temp = new Computer;
+    temp->id = id;
+    temp->next = nullptr;
 
-    while (head->next != nullptr)
-      head = head->next;
+    if (head == nullptr)
+      head = temp;
 
-    head->id = id;
-    head->next = new Computer;
-    head = head->next;
+    else {
+      Computer *tracker = head;
 
-    head = reset;
+      while (tracker->next != nullptr)
+        tracker = tracker->next;
+
+      tracker->next = temp;
+    }
   }
 
 public:
   Network() {}
 
-  Network(std::string fn)
-  {
+  Network(std::string fn) {
     char temp[200];
     net.resize(10, nullptr); // Intitial size for vector
     std::ifstream fin(fn);
     int index = 0;
 
-    while (fin >> index)
-    {
+    while (fin >> index) {
 
-      net[index] = new Computer;
       fin.getline(temp, 200, '\n');
 
       for (int i = 0; temp[i]; i++)
@@ -69,16 +68,20 @@ public:
     fin.close();
   }
 
-  Network(const Network &obj);
+  Network(const Network &obj) {
 
+    net.resize(obj.net.size(), nullptr);
+    std::vector<Computer *> tmp = obj.net;
+    for (int i = 0; tmp[i] && i < tmp.size(); i++)
+      while (tmp[i]) {
+        addConnection(net[i], tmp[i]->id);
+        tmp[i] = tmp[i]->next;
+      }
+  }
   const Network &operator=(const Network &obj);
 
   // create net array of size, with no connections
-  Network(int size)
-  {
-    Computer cp;
-    net.resize(size, nullptr);
-  }
+  Network(int size) { net.resize(size, nullptr); }
 
   // connect computers x and y
   // use the utility method addConnection
@@ -128,55 +131,52 @@ public:
   // Returns two unconnected computers with most common neighbors
   std::vector<int> suggestConnection();
 
-  ~Network()
-  {
-    for (int i = 0; i < net.size(); i++)
-    {
+  ~Network() {
+    for (int i = 0; i < net.size(); i++) {
       if (!net[i])
         continue;
+
       Computer *t1 = net[i];
       Computer *temp = net[i];
 
-      while (t1->next)
-      {
+      while (t1->next) {
+
         temp = t1->next;
-        delete t1->next;
+
+        if (t1->next)
+          delete t1->next;
+
         t1->next = temp;
+        t1 = t1->next;
       }
+
       delete net[i];
     }
     net.clear();
   }
 };
 
-std::ostream &operator<<(std::ostream &out, Network &obj)
-{
+std::ostream &operator<<(std::ostream &out, Network &obj) {
+  for (int i = 0; obj.net[i] && i < obj.net.size(); i++) {
+    out << "\n>>> Displaying Information for Node [" << i
+        << "]\nConnection IDs: [";
+    while (obj.net[i]) {
+      if (obj.net[i]->next == nullptr)
+        out << obj.net[i]->id;
 
-  for (int i = 0; i < obj.net.size() - 1; i++)
-  {
+      else
+        out << obj.net[i]->id << ", ";
 
-    if (obj.net[i])
-    {
-      out << "\n>>> Displaying Information for Node [" << i
-          << "]\nConnection IDs: [";
-      while (obj.net[i]->next)
-      {
-        if (obj.net[i]->next->next == nullptr)
-          out << obj.net[i]->id;
-
-        else
-          out << obj.net[i]->id << ", ";
-        obj.net[i] = obj.net[i]->next;
-      }
-      out << "]\n";
+      obj.net[i] = obj.net[i]->next;
     }
+
+    out << "]\n";
   }
 
   return out;
 }
 
-int main()
-{
-  Network my_obj("testing.txt");
-  cout << my_obj;
+int main() {
+  Network my_obj("testing.txt"), abc(my_obj);
+  cout << abc;
 }
