@@ -73,11 +73,14 @@ public:
 
     net.resize(obj.net.size(), nullptr);
     std::vector<Computer *> tmp = obj.net;
-    for (int i = 0; tmp[i] && i < tmp.size(); i++)
+    for (int i = 0; i < tmp.size(); i++) {
+      if (!tmp[i])
+        continue;
       while (tmp[i]) {
         addConnection(net[i], tmp[i]->id);
         tmp[i] = tmp[i]->next;
       }
+    }
   }
   const Network &operator=(const Network &obj);
 
@@ -158,9 +161,16 @@ public:
 };
 
 std::ostream &operator<<(std::ostream &out, Network &obj) {
-  for (int i = 0; obj.net[i] && i < obj.net.size(); i++) {
-    out << "\n>>> Displaying Information for Node [" << i
-        << "]\nConnection IDs: [";
+  const int SIZE = obj.net.size();
+  printf("****Displaying Information For Nodes (%d - %d)****\n", 0, SIZE);
+
+  for (int i = 0; i < SIZE; i++) {
+    if (!obj.net[i]) {
+      out << "\n>>> Node No. [" << i << "] is empty\n";
+      continue;
+    }
+
+    out << "\n>>> Node No. [" << i << "]\nConnection IDs: [";
     while (obj.net[i]) {
       if (obj.net[i]->next == nullptr)
         out << obj.net[i]->id;
