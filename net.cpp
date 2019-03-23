@@ -19,9 +19,11 @@ is connected; the order of the ids in a list does not matter.
 - A class which stores a network is defined below.
 */
 
-class Network {
+class Network
+{
 
-  struct Computer {
+  struct Computer
+  {
     int id;
     Computer *next;
     // method to enable if(n[i][j]) cout<<"i and j are connected.
@@ -31,7 +33,8 @@ class Network {
   // add id into the list pointed to by head
   std::vector<Computer *> net;
 
-  void addConnection(Computer *&head, int id) {
+  void addConnection(Computer *&head, int id)
+  {
     Computer *temp = new Computer;
     temp->id = id;
     temp->next = nullptr;
@@ -39,7 +42,8 @@ class Network {
     if (head == nullptr)
       head = temp;
 
-    else {
+    else
+    {
       Computer *tracker = head;
 
       while (tracker->next != nullptr)
@@ -52,13 +56,15 @@ class Network {
 public:
   Network() {}
 
-  Network(std::string fn) {
+  Network(std::string fn)
+  {
     char temp[200];
     net.resize(10, nullptr); // Intitial size for vector
     std::ifstream fin(fn);
     int index = 0;
 
-    while (fin >> index) {
+    while (fin >> index)
+    {
 
       fin.getline(temp, 200, '\n');
 
@@ -69,20 +75,58 @@ public:
     fin.close();
   }
 
-  Network(const Network &obj) {
+  Network(const Network &obj)
+  {
 
     net.resize(obj.net.size(), nullptr);
     std::vector<Computer *> tmp = obj.net;
-    for (int i = 0; i < tmp.size(); i++) {
+    for (int i = 0; i < tmp.size(); i++)
+    {
       if (!tmp[i])
         continue;
-      while (tmp[i]) {
+      while (tmp[i])
+      {
         addConnection(net[i], tmp[i]->id);
         tmp[i] = tmp[i]->next;
       }
     }
   }
-  const Network &operator=(const Network &obj);
+
+  const Network &operator=(const Network &obj)
+  {
+    for (int i = 0; i < net.size(); i++)
+    {
+      if (!net[i])
+        continue;
+
+      Computer *t1 = net[i], *temp = t1;
+
+      while (t1)
+      {
+        temp = t1->next;
+        delete t1;
+        t1 = temp;
+      }
+      delete t1;
+    }
+
+    net.clear();
+
+    net.resize(obj.net.size(), nullptr);
+    std::vector<Computer *> tmp = obj.net;
+    for (int i = 0; i < tmp.size(); i++)
+    {
+      if (!tmp[i])
+        continue;
+      while (tmp[i])
+      {
+        addConnection(net[i], tmp[i]->id);
+        tmp[i] = tmp[i]->next;
+      }
+    }
+
+    return *this;
+  }
 
   // create net array of size, with no connections
   Network(int size) { net.resize(size, nullptr); }
@@ -135,43 +179,45 @@ public:
   // Returns two unconnected computers with most common neighbors
   std::vector<int> suggestConnection();
 
-  ~Network() {
-    for (int i = 0; i < net.size(); i++) {
+  ~Network()
+  {
+    for (int i = 0; i < net.size(); i++)
+    {
       if (!net[i])
         continue;
 
-      Computer *t1 = net[i];
-      Computer *temp = net[i];
+      Computer *t1 = net[i], *temp;
 
-      while (t1->next) {
+      while (t1)
+      {
 
         temp = t1->next;
-
-        if (t1->next)
-          delete t1->next;
-
-        t1->next = temp;
-        t1 = t1->next;
+        delete t1;
+        t1 = temp;
       }
 
-      delete net[i];
+      delete t1;
     }
     net.clear();
   }
 };
 
-std::ostream &operator<<(std::ostream &out, Network &obj) {
+std::ostream &operator<<(std::ostream &out, Network &obj)
+{
   const int SIZE = obj.net.size();
-  printf("****Displaying Information For Nodes (%d - %d)****\n", 0, SIZE);
+  printf("Displaying Information For Nodes (%d - %d)\n", 0, SIZE - 1);
 
-  for (int i = 0; i < SIZE; i++) {
-    if (!obj.net[i]) {
+  for (int i = 0; i < SIZE; i++)
+  {
+    if (!obj.net[i])
+    {
       out << "\n>>> Node No. [" << i << "] is empty\n";
       continue;
     }
 
     out << "\n>>> Node No. [" << i << "]\nConnection IDs: [";
-    while (obj.net[i]) {
+    while (obj.net[i])
+    {
       if (obj.net[i]->next == nullptr)
         out << obj.net[i]->id;
 
@@ -187,7 +233,9 @@ std::ostream &operator<<(std::ostream &out, Network &obj) {
   return out;
 }
 
-int main() {
+int main()
+{
   Network my_obj("testing.txt"), abc(my_obj);
+  abc = my_obj;
   cout << abc;
 }
