@@ -93,13 +93,11 @@ class Network
 
       while (tracker->next != nullptr)
       {
-
         if (tracker->id == id || tracker->next->id == id)
         {
           is_duplicate = true;
           break;
         }
-
         tracker = tracker->next;
       }
 
@@ -138,11 +136,13 @@ public:
     {
       if (!tmp[i])
         continue;
+
       while (tmp[i])
       {
         addConnection(net[i], tmp[i]->id);
         tmp[i] = tmp[i]->next;
       }
+      tmp[i] = nullptr;
     }
   }
 
@@ -309,8 +309,6 @@ public:
   {
     std::vector<int> connection_ids;
 
-    Network my_obj(net.size());
-
     // Collect computer ids in all nodes [BEGIN]
     for (int i = 0; i < net.size(); i++)
     {
@@ -334,30 +332,15 @@ public:
       }
     }
     // END
-
     // Add Connections
+    Network my_obj(*this);
+
     for (int i = 0; i < net.size(); i++)
-    {
-      if (!net[i])
-        continue;
+      for (int j = i; j < connection_ids.size(); j++)
+        if (my_obj.net[j] && my_obj.net[j]->id != connection_ids[j])
+          addConnection(my_obj.net[j], connection_ids[j]);
 
-      Computer *tracker = net[i];
-
-      while (tracker != nullptr)
-      {
-        bool is_exist = true;
-
-        for (int i = 0;  i < connection_ids.size(); i++)
-          if (tracker->id != connection_ids[i])
-            is_exist = false;
-
-        if (!is_exist)
-          addConnection(my_obj.net[i], tracker->id);
-        
-
-        tracker = tracker->next;
-      }
-    }
+    my_obj = my_obj - *this;
     return my_obj;
   }
 
@@ -418,7 +401,6 @@ std::ostream &operator<<(std::ostream &out, Network &obj)
 {
   const int SIZE = obj.net.size();
   printf("| Displaying Information For Nodes (%d - %d) |\n", 0, SIZE - 1);
-
   for (int i = 0; i < SIZE; i++)
   {
     if (!obj.net[i])
@@ -463,7 +445,7 @@ std::vector<int> getCommonNetworks(const Network &link1, const Network &link2)
 
 int main()
 {
-  Network my_obj("testing.txt"), obj1("testing1.txt");
+  Network my_obj("testing.txt");
   Network test = -my_obj;
   cout << test;
 }
