@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <vector>
 
 using std::cin;
@@ -18,6 +19,32 @@ is connected; the order of the ids in a list does not matter.
 
 - A class which stores a network is defined below.
 */
+
+std::vector<int> extractNum(std::string line)
+{
+  std::vector<int> num_vec;
+  std::stringstream buffer;
+  int i = 0, num;
+
+  while (line[i] != 0)
+  {
+    if (isdigit(line[i]))
+      buffer << line[i];
+
+    i++;
+
+    if (line[i] == ' ' || line[i] == 0)
+    {
+      buffer >> num;
+      buffer.clear();
+      buffer.str("");
+      if (num)
+        num_vec.push_back(num);
+      num = 0;
+    }
+  }
+  return num_vec;
+}
 
 class Network
 {
@@ -87,19 +114,18 @@ public:
   // *:  FIX: getline, more than one digit in stream
   Network(std::string fn)
   {
-    char temp[200];
+    std::string temp;
     net.resize(10, nullptr); // Intitial size for vector
     std::ifstream fin(fn);
     int index = 0;
 
     while (fin >> index)
     {
-
-      fin.getline(temp, 200, '\n');
-
-      for (int i = 0; temp[i]; i++)
-        if (temp[i] != ' ')
-          addConnection(net[index], (temp[i] - 48));
+      getline(fin, temp, '\n');
+      // fin.getline(temp, '\n');
+      std::vector<int> j = extractNum(temp);
+      for (int i = 0; i < j.size(); i++)
+        addConnection(net[index], j[i]);
     }
     fin.close();
   }
