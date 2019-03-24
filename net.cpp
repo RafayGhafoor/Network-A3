@@ -107,11 +107,11 @@ class Network
         tracker->next = temp;
     }
   }
+  friend std::vector<int> getCommonNetworks(const Network &link1, const Network &link2);
 
 public:
   Network() {}
 
-  // *:  FIX: getline, more than one digit in stream
   Network(std::string fn)
   {
     std::string temp;
@@ -237,8 +237,43 @@ public:
 
   // intersect two networks (extract the common core)
   // links and computers present in both networks appear in the result
-  Network operator*(const Network &obj);
-  // Remove the common connections of obj and this network
+  Network operator*(const Network &obj)
+  {
+    std::vector<int> commonNodes = getCommonNetworks(*this, obj);
+    int set_obj_size = 0;
+    for (int i = 0; i < commonNodes.size(); i++)
+    {
+      if (set_obj_size <= commonNodes[i])
+        set_obj_size = commonNodes[i];
+    }
+
+    Network set_obj(set_obj_size + 1);
+
+    for (int i = 0, index = 0; i < commonNodes.size(); i++)
+    {
+      index = commonNodes[i];
+      Computer *link1 = net[index], *link2 = obj.net[index];
+      while (link1)
+      {
+        bool common = false;
+        while (link2)
+        {
+          if (link2->id == link1->id)
+          {
+            common = true;
+            break;
+          }
+          link2 = link2->next;
+        }
+
+        if (common)
+          addConnection(set_obj.net[index], link2->id);
+
+        link1 = link1->next;
+      }
+    }
+    return set_obj;
+  }
 
   // Remove the common connections of obj and this network
   Network operator-(const Network &obj);
@@ -334,9 +369,24 @@ std::ostream &operator<<(std::ostream &out, Network &obj)
   return out;
 }
 
+std::vector<int> getCommonNetworks(const Network &link1, const Network &link2)
+{
+  std::vector<int> commonNodes;
+  int min_iter = link1.net.size();
+
+  if (min_iter > link2.net.size())
+    min_iter = link2.net.size();
+
+  for (int i = 0; i < min_iter; i++)
+    if (link1.net[i] && link2.net[i])
+      commonNodes.push_back(i);
+
+  return commonNodes;
+}
+
 int main()
 {
   Network my_obj("testing.txt"), obj1("testing1.txt");
-  Network test = my_obj + obj1;
+  Network test = my_obj * obj1;
   cout << test;
 }
