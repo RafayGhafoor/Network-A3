@@ -283,23 +283,28 @@ public:
     if (net.size() > obj.net.size())
       set_obj_size = net.size();
 
-    Network set_obj(*this);
-    
-    for (int i = 0; i < set_obj.size(); i++)
+    Network set_obj(set_obj_size);
+
+    for (int i = 0; i < set_obj_size; i++)
     {
-      Computer *link1 = net[x], *link2 = net[y];
-
-      while (link2)
-      {
-        addConnection(link1, link2->id);
-        link2 = link2->next;
-      }
-
-      link2 = net[y]; // reset link2 node pointer
+      Computer *link1 = net[i], *link2 = obj.net[i];
 
       while (link1)
       {
-        addConnection(link2, link1->id);
+        bool common = false;
+        while (link2)
+        {
+          if (link2->id == link1->id)
+          {
+            common = true;
+            break;
+          }
+          link2 = link2->next;
+        }
+
+        if (!common)
+          addConnection(set_obj.net[i], link1->id);
+
         link1 = link1->next;
       }
     }
@@ -415,6 +420,6 @@ std::vector<int> getCommonNetworks(const Network &link1, const Network &link2)
 int main()
 {
   Network my_obj("testing.txt"), obj1("testing1.txt");
-  Network test = my_obj * obj1;
+  Network test = my_obj - obj1;
   cout << test;
 }
