@@ -278,31 +278,24 @@ public:
   // Remove the common connections of obj and this network
   Network operator-(const Network &obj)
   {
-    int set_obj_size = net.size();
+    Network set_obj(*this);
 
-    Network set_obj(set_obj_size);
-
-    for (int i = 0; i < set_obj_size; i++)
+    for (int i = 0; i < net.size(); i++)
     {
-      Computer *link1 = net[i], *link2 = obj.net[i];
+      Computer *link1 = set_obj.net[i], *link2 = obj.net[i];
 
-      while (link1)
+      if (link1 && link2)
       {
-        bool common = false;
-        while (link2)
+        Computer *t1 = set_obj.net[i], *temp;
+
+        while (set_obj.net[i])
         {
-          if (link2->id == link1->id)
-          {
-            common = true;
-            break;
-          }
-          link2 = link2->next;
+          temp = set_obj.net[i]->next;
+          delete set_obj.net[i];
+          set_obj.net[i] = temp;
         }
-
-        if (!common)
-          addConnection(set_obj.net[i], link1->id);
-
-        link1 = link1->next;
+        delete set_obj.net[i];
+        set_obj.net[i] = nullptr;
       }
     }
     return set_obj;
