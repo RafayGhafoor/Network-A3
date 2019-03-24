@@ -276,7 +276,35 @@ public:
   }
 
   // Remove the common connections of obj and this network
-  Network operator-(const Network &obj);
+  Network operator-(const Network &obj)
+  {
+    int set_obj_size = obj.net.size();
+
+    if (net.size() > obj.net.size())
+      set_obj_size = net.size();
+
+    Network set_obj(*this);
+    
+    for (int i = 0; i < set_obj.size(); i++)
+    {
+      Computer *link1 = net[x], *link2 = net[y];
+
+      while (link2)
+      {
+        addConnection(link1, link2->id);
+        link2 = link2->next;
+      }
+
+      link2 = net[y]; // reset link2 node pointer
+
+      while (link1)
+      {
+        addConnection(link2, link1->id);
+        link1 = link1->next;
+      }
+    }
+    return set_obj;
+  }
 
   // Take complement of the Network
   // Returns a network with the same computers
