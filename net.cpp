@@ -333,13 +333,23 @@ public:
     }
     // END
     // Add Connections
-    Network my_obj(*this);
+    Network my_obj(net.size() + 1);
 
     for (int i = 0; i < net.size(); i++)
       for (int j = 0; j < connection_ids.size(); j++)
-        if (net[i])
-          addConnection(my_obj.net[i], connection_ids[j]);
+      {
+        bool is_exist = false;
 
+        if (net[i])
+        {
+          if (connection_ids[j] == net[i]->id)
+            is_exist = true;
+
+          if (!is_exist)
+            addConnection(my_obj.net[i], connection_ids[j]);
+          // net[i] = net[i]->next;
+        }
+      }
     // my_obj = my_obj - *this;
     return my_obj;
   }
