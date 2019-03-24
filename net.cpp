@@ -27,7 +27,24 @@ class Network
     int id;
     Computer *next;
     // method to enable if(n[i][j]) cout<<"i and j are connected.
-    bool operator[](int j);
+    bool operator[](int j)
+    {
+      if (id == j)
+        return 1;
+
+      Computer *ptr = next;
+
+      while (1)
+      {
+        if (ptr->id == j)
+          return 1;
+
+        ptr = ptr->next;
+
+        if (!ptr)
+          return 0;
+      }
+    }
   };
 
   // add id into the list pointed to by head
@@ -35,6 +52,7 @@ class Network
 
   void addConnection(Computer *&head, int id)
   {
+    bool is_duplicate = false;
     Computer *temp = new Computer;
     temp->id = id;
     temp->next = nullptr;
@@ -47,15 +65,26 @@ class Network
       Computer *tracker = head;
 
       while (tracker->next != nullptr)
-        tracker = tracker->next;
+      {
 
-      tracker->next = temp;
+        if (tracker->id == id || tracker->next->id == id)
+        {
+          is_duplicate = true;
+          break;
+        }
+
+        tracker = tracker->next;
+      }
+
+      if (!is_duplicate)
+        tracker->next = temp;
     }
   }
 
 public:
   Network() {}
 
+  // *:  FIX: getline, more than one digit in stream
   Network(std::string fn)
   {
     char temp[200];
@@ -77,7 +106,6 @@ public:
 
   Network(const Network &obj)
   {
-
     net.resize(obj.net.size(), nullptr);
     std::vector<Computer *> tmp = obj.net;
     for (int i = 0; i < tmp.size(); i++)
@@ -94,23 +122,27 @@ public:
 
   const Network &operator=(const Network &obj)
   {
-    for (int i = 0; i < net.size(); i++)
-    {
-      if (!net[i])
-        continue;
 
-      Computer *t1 = net[i], *temp = t1;
-
-      while (t1)
+    if (this != &obj)
+    { // Self-assessment check
+      for (int i = 0; i < net.size(); i++)
       {
-        temp = t1->next;
-        delete t1;
-        t1 = temp;
-      }
-      delete t1;
-    }
+        if (!net[i])
+          continue;
 
-    net.clear();
+        Computer *t1 = net[i], *temp = t1;
+
+        while (t1)
+        {
+          temp = t1->next;
+          delete t1;
+          t1 = temp;
+        }
+        delete t1;
+      }
+
+      net.clear();
+    }
 
     net.resize(obj.net.size(), nullptr);
     std::vector<Computer *> tmp = obj.net;
@@ -129,15 +161,54 @@ public:
   }
 
   // create net array of size, with no connections
-  Network(int size) { net.resize(size, nullptr); }
+  Network(int size)
+  {
+    net.resize(size, nullptr);
+  }
 
   // connect computers x and y
   // use the utility method addConnection
-  void addConnection(int x, int y);
+  void addConnection(int x, int y)
+  {
+    Computer *link1 = net[x], *link2 = net[y];
+
+    while (link2)
+    {
+      addConnection(link1, link2->id);
+      link2 = link2->next;
+    }
+
+    link2 = net[y]; // reset link2 node pointer
+
+    while (link1)
+    {
+      addConnection(link2, link1->id);
+      link1 = link1->next;
+    }
+  }
 
   // merge two networks (take union)
   // computers, connections in any one of the networks appear in result
-  Network operator+(const Network &obj);
+  Network operator+(const Network &obj)
+  {
+    int threshold = obj.net.size(), init_size = net.size();
+
+    if (init_size > threshold)
+      threshold = init_size;
+
+    for (int i = 0; i < threshold; i++)
+    {
+      Computer *def = obj.net[i];
+      while (def)
+      {
+        addConnection(net[i], def->id);
+        def = def->next;
+      }
+    }
+    cout << *this;
+
+    return *this;
+  }
 
   // intersect two networks (extract the common core)
   // links and computers present in both networks appear in the result
@@ -156,10 +227,14 @@ public:
   friend std::ostream &operator<<(std::ostream &out, Network &obj);
 
   // method to enable if(n[i][j]) cout<<"i and j are connected.
-  Computer &operator[](int i);
+  Computer &operator[](int i) { return *net[i]; }
 
   // add another computer to the network
-  Network operator++(int);
+  Network operator++(int)
+  {
+    net.resize(net.size() + 1, nullptr);
+    return *this;
+  }
 
   // logical methods
   // subNetwork returns true if obj is a sub-network of this network
@@ -205,7 +280,7 @@ public:
 std::ostream &operator<<(std::ostream &out, Network &obj)
 {
   const int SIZE = obj.net.size();
-  printf("Displaying Information For Nodes (%d - %d)\n", 0, SIZE - 1);
+  printf("| Displaying Information For Nodes (%d - %d) |\n", 0, SIZE - 1);
 
   for (int i = 0; i < SIZE; i++)
   {
@@ -230,12 +305,13 @@ std::ostream &operator<<(std::ostream &out, Network &obj)
     out << "]\n";
   }
 
+  out << endl;
   return out;
 }
 
 int main()
 {
-  Network my_obj("testing.txt"), abc(my_obj);
-  abc = my_obj;
-  cout << abc;
+  Network my_obj("testing.txt"), obj1("testing1.txt");
+  Network test = my_obj + obj1;
+  // cout << test;
 }
