@@ -336,11 +336,11 @@ public:
     Network my_obj(*this);
 
     for (int i = 0; i < net.size(); i++)
-      for (int j = i; j < connection_ids.size(); j++)
-        if (my_obj.net[j] && my_obj.net[j]->id != connection_ids[j])
-          addConnection(my_obj.net[j], connection_ids[j]);
+      for (int j = 0; j < connection_ids.size(); j++)
+        if (net[i])
+          addConnection(my_obj.net[i], connection_ids[j]);
 
-    my_obj = my_obj - *this;
+    // my_obj = my_obj - *this;
     return my_obj;
   }
 
