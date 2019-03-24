@@ -286,7 +286,7 @@ public:
 
       if (link1 && link2)
       {
-        Computer *t1 = set_obj.net[i], *temp;
+        Computer *temp;
 
         while (set_obj.net[i])
         {
@@ -305,7 +305,61 @@ public:
   // Returns a network with the same computers
   // but which contains complementary connections
   // resultant contains connections which are absent in this network
-  Network operator-();
+  Network operator-()
+  {
+    std::vector<int> connection_ids;
+
+    Network my_obj(net.size());
+
+    // Collect computer ids in all nodes [BEGIN]
+    for (int i = 0; i < net.size(); i++)
+    {
+      if (!net[i])
+        continue;
+
+      Computer *tracker = net[i];
+
+      while (tracker != nullptr)
+      {
+        bool is_dup = false;
+
+        for (int i = 0; !is_dup && i < connection_ids.size(); i++)
+          if (connection_ids[i] == tracker->id)
+            is_dup = true;
+
+        if (!is_dup)
+          connection_ids.push_back(tracker->id);
+
+        tracker = tracker->next;
+      }
+    }
+    // END
+
+    // Add Connections
+    for (int i = 0; i < net.size(); i++)
+    {
+      if (!net[i])
+        continue;
+
+      Computer *tracker = net[i];
+
+      while (tracker != nullptr)
+      {
+        bool is_exist = true;
+
+        for (int i = 0;  i < connection_ids.size(); i++)
+          if (tracker->id != connection_ids[i])
+            is_exist = false;
+
+        if (!is_exist)
+          addConnection(my_obj.net[i], tracker->id);
+        
+
+        tracker = tracker->next;
+      }
+    }
+    return my_obj;
+  }
 
   friend std::ostream &operator<<(std::ostream &out, Network &obj);
 
@@ -410,6 +464,6 @@ std::vector<int> getCommonNetworks(const Network &link1, const Network &link2)
 int main()
 {
   Network my_obj("testing.txt"), obj1("testing1.txt");
-  Network test = my_obj - obj1;
+  Network test = -my_obj;
   cout << test;
 }
