@@ -278,10 +278,7 @@ public:
   // Remove the common connections of obj and this network
   Network operator-(const Network &obj)
   {
-    int set_obj_size = obj.net.size();
-
-    if (net.size() > obj.net.size())
-      set_obj_size = net.size();
+    int set_obj_size = net.size();
 
     Network set_obj(set_obj_size);
 
