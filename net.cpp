@@ -231,7 +231,6 @@ public:
         def = def->next;
       }
     }
-    cout << *this;
 
     return *this;
   }
@@ -339,5 +338,5 @@ int main()
 {
   Network my_obj("testing.txt"), obj1("testing1.txt");
   Network test = my_obj + obj1;
-  // cout << test;
+  cout << test;
 }
