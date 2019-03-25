@@ -370,9 +370,57 @@ public:
   }
 
   // logical methods
-  // subNetwork returns true if obj is a sub-network of this network
-  bool subNetwork(const Network &obj);
 
+  // subNetwork returns true if obj is a sub-network of this network
+  bool subNetwork(const Network &obj)
+  {
+    int net_size = 0, obj_size = 0;
+    for (int i = 0; i < net.size(); i++)
+      if (net[i])
+        net_size++;
+
+    for (int i = 0; i < obj.net.size(); i++)
+      if (obj.net[i])
+        obj_size++;
+
+    if (net_size < obj_size)
+      return false;
+
+    std::vector<int> commonNodes = getCommonNetworks(obj, *this);
+
+    for (int i = 0; i < commonNodes.size(); i++)
+    {
+      Computer *link1 = net[commonNodes[i]], *link2 = obj.net[i];
+      while (link2)
+      {
+        bool is_exist = false;
+       
+        while (link1){
+          if (link2->id == link1->id){
+            is_exist = true;
+            break;
+          }
+          link1 = link1->next;
+        }
+       
+        if (!is_exist)
+          return 0;
+       
+        link2 = link2->next;
+      }
+    }
+
+    return 1;
+  }
+
+  int getLinkSize(Computer *&link)
+  {
+    Computer *temp = link;
+    int i = 0;
+    for (; temp; temp = temp->next, i++)
+      ;
+    return i;
+  }
   // get all neighbors of computer nid
   std::vector<int> getNeighbours(int nid);
 
@@ -458,7 +506,6 @@ std::vector<int> getCommonNetworks(const Network &link1, const Network &link2)
 
 int main()
 {
-  Network my_obj("testing.txt");
-  Network test = -my_obj;
-  cout << test;
+  Network my_obj("testing.txt"), obj("testing1.txt");
+  cout << my_obj.subNetwork(obj) << endl;
 }
