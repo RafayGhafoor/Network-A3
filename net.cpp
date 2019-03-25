@@ -332,25 +332,28 @@ public:
       }
     }
     // END
+
     // Add Connections
     Network my_obj(net.size() + 1);
 
     for (int i = 0; i < net.size(); i++)
       for (int j = 0; j < connection_ids.size(); j++)
       {
+        Computer *link1 = net[i];
         bool is_exist = false;
-
-        if (net[i])
+        while (link1)
         {
-          if (connection_ids[j] == net[i]->id)
-            is_exist = true;
+          if (link1)
+            if (connection_ids[j] == link1->id)
+              is_exist = true;
 
-          if (!is_exist)
-            addConnection(my_obj.net[i], connection_ids[j]);
-          // net[i] = net[i]->next;
+          link1 = link1->next;
         }
+
+        if (net[i] && !is_exist)
+          addConnection(my_obj.net[i], connection_ids[j]);
       }
-    // my_obj = my_obj - *this;
+
     return my_obj;
   }
 
