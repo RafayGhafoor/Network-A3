@@ -394,18 +394,20 @@ public:
       while (link2)
       {
         bool is_exist = false;
-       
-        while (link1){
-          if (link2->id == link1->id){
+
+        while (link1)
+        {
+          if (link2->id == link1->id)
+          {
             is_exist = true;
             break;
           }
           link1 = link1->next;
         }
-       
+
         if (!is_exist)
           return 0;
-       
+
         link2 = link2->next;
       }
     }
@@ -422,7 +424,41 @@ public:
     return i;
   }
   // get all neighbors of computer nid
-  std::vector<int> getNeighbours(int nid);
+  std::vector<int> getNeighbours(int nid)
+  {
+    std::vector<int> neighbours;
+    for (int i = 0; i < net.size(); i++)
+    {
+      Computer *link1 = net[i];
+      while (link1)
+      {
+        Computer *temp = net[i];
+        if (link1->id == nid)
+        {
+          while (temp)
+          {
+            if (temp->id != nid)
+            {
+              bool is_exist = false;
+              for (int i = 0; i < neighbours.size(); i++)
+                if (neighbours[i] == temp->id)
+                {
+                  is_exist = true;
+                  break;
+                }
+                
+              if (!is_exist)
+                neighbours.push_back(temp->id);
+            }
+            temp = temp->next;
+          }
+          break;
+        }
+        link1 = link1->next;
+      }
+    }
+    return neighbours;
+  }
 
   // get all unique neighbors-of-neighbors of computer nid
   std::vector<int> getNeighboursofNeighbours(int nid);
@@ -507,5 +543,10 @@ std::vector<int> getCommonNetworks(const Network &link1, const Network &link2)
 int main()
 {
   Network my_obj("testing.txt"), obj("testing1.txt");
-  cout << my_obj.subNetwork(obj) << endl;
+  std::vector<int> myarr = my_obj.getNeighbours(2);
+
+  for (int i = 0; i < myarr.size(); i++)
+  {
+    cout << myarr[i] << endl;
+  }
 }
