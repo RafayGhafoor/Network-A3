@@ -38,8 +38,7 @@ std::vector<int> extractNum(std::string line)
       buffer >> num;
       buffer.clear();
       buffer.str("");
-      if (num)
-        num_vec.push_back(num);
+      num_vec.push_back(num);
       num = 0;
     }
   }
@@ -79,7 +78,7 @@ class Network
 
   void addConnection(Computer *&head, int id)
   {
-    bool is_duplicate = false;
+    bool is_exists = false;
     Computer *temp = new Computer;
     temp->id = id;
     temp->next = nullptr;
@@ -95,13 +94,13 @@ class Network
       {
         if (tracker->id == id || tracker->next->id == id)
         {
-          is_duplicate = true;
+          is_exists = true;
           break;
         }
         tracker = tracker->next;
       }
 
-      if (!is_duplicate)
+      if (!is_exists)
         tracker->next = temp;
     }
   }
@@ -440,28 +439,52 @@ public:
             if (temp->id != nid)
             {
               bool is_exist = false;
-              for (int i = 0; i < neighbours.size(); i++)
-                if (neighbours[i] == temp->id)
+              for (int j = 0; j < neighbours.size(); j++)
+                if (neighbours[j] == temp->id)
                 {
                   is_exist = true;
                   break;
                 }
-                
+
               if (!is_exist)
                 neighbours.push_back(temp->id);
             }
             temp = temp->next;
           }
-          break;
         }
         link1 = link1->next;
       }
     }
+
     return neighbours;
   }
 
   // get all unique neighbors-of-neighbors of computer nid
-  std::vector<int> getNeighboursofNeighbours(int nid);
+  std::vector<int> getNeighboursofNeighbours(int nid)
+  {
+    std::vector<int> neighboursOfNeighbours;
+
+    std::vector<int> neighbors = getNeighbours(nid);
+    for (int i = 0; i < neighbors.size(); i++)
+    {
+      std::vector<int> ids = getNeighbours(neighbors[i]);
+      for (int j = 0; j < ids.size(); j++)
+      {
+        bool is_exist = false;
+        for (int k = 0; k < neighboursOfNeighbours.size(); k++)
+        {
+          if (neighboursOfNeighbours[j] == ids[k])
+          {
+            is_exist = true;
+            break;
+          }
+        }
+        if (!is_exist && ids[j] != nid)
+          neighboursOfNeighbours.push_back(ids[j]);
+      }
+    }
+    return neighboursOfNeighbours;
+  }
 
   // returns all computers in order of their number of neighbors
   // computer with most neighbors comes first and so on
@@ -496,26 +519,27 @@ public:
 
 std::ostream &operator<<(std::ostream &out, Network &obj)
 {
+  Network obj1(obj);
   const int SIZE = obj.net.size();
   printf("| Displaying Information For Nodes (%d - %d) |\n", 0, SIZE - 1);
   for (int i = 0; i < SIZE; i++)
   {
-    if (!obj.net[i])
+    if (!obj1.net[i])
     {
       out << "\n>>> Node No. [" << i << "] is empty\n";
       continue;
     }
 
     out << "\n>>> Node No. [" << i << "]\nConnection IDs: [";
-    while (obj.net[i])
+    while (obj1.net[i])
     {
-      if (obj.net[i]->next == nullptr)
-        out << obj.net[i]->id;
+      if (obj1.net[i]->next == nullptr)
+        out << obj1.net[i]->id;
 
       else
-        out << obj.net[i]->id << ", ";
+        out << obj1.net[i]->id << ", ";
 
-      obj.net[i] = obj.net[i]->next;
+      obj1.net[i] = obj1.net[i]->next;
     }
 
     out << "]\n";
@@ -542,11 +566,6 @@ std::vector<int> getCommonNetworks(const Network &link1, const Network &link2)
 
 int main()
 {
-  Network my_obj("testing.txt"), obj("testing1.txt");
-  std::vector<int> myarr = my_obj.getNeighbours(2);
+  Network my_obj("testing.txt");
 
-  for (int i = 0; i < myarr.size(); i++)
-  {
-    cout << myarr[i] << endl;
-  }
 }
