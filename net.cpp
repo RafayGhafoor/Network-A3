@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 
 using std::cin;
 using std::cout;
@@ -488,7 +489,14 @@ public:
 
   // returns all computers in order of their number of neighbors
   // computer with most neighbors comes first and so on
-  std::vector<int> orderOfDegree();
+  std::vector<int> orderOfDegree()
+  {
+    std::vector<int> array;
+    for (int i = 0; i < net.size(); i++)
+      array.push_back(getNeighbours(i).size());
+    std::sort(array.begin(), array.end(), std::greater<int>());
+    return array;
+  }
 
   // Suggest connection
   // Returns two unconnected computers with most common neighbors
@@ -567,5 +575,7 @@ std::vector<int> getCommonNetworks(const Network &link1, const Network &link2)
 int main()
 {
   Network my_obj("testing.txt");
-
+  std::vector<int> test = my_obj.orderOfDegree();
+  for (int i = 0; i < test.size(); i++)
+    cout << test[i] << endl;
 }
